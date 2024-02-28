@@ -4,8 +4,8 @@
 # ~~~~
 
 # An example controller showing a sample home page
-GET    /                           controllers.HomeController.index()
-GET   /getEmployees                controllers.HomeController.getEmployees()
+GET    /                            controllers.HomeController.index()
+GET   /getEmployees                 controllers.HomeController.getEmployees()
 GET   /filterEmployeeById           controllers.HomeController.filterEmployeeById(id:Int)
 GET   /filterEmployeeByName         controllers.HomeController.filterEmployeeByName(name:String)
 GET   /filterEmployeeByMobile       controllers.HomeController.filterEmployeeByMobile(mobile:String)
