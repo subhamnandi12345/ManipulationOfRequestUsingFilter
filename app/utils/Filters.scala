@@ -23,6 +23,7 @@ class HeadersFilter @Inject()(implicit val mat: Materializer, executionContextUt
   def apply(nextFilter: RequestHeader => Future[Result])(requestHeader: RequestHeader): Future[Result] = {
     nextFilter(requestHeader).map { result =>
       println("passing through filters ")
+      println("hello")
       result.withHeaders(
         PRAGMA -> "no-cache",
         CACHE_CONTROL -> "no-cache, no-store, must-revalidate, max-age=0",
