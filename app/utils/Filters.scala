@@ -1,8 +1,9 @@
 package utils
 
 import akka.stream.Materializer
+import akka.util.ByteString
 import play.Logger
-import play.api.http.DefaultHttpFilters
+import play.api.http.{DefaultHttpFilters, HttpEntity}
 import play.api.http.HeaderNames._
 import play.api.mvc._
 
@@ -18,22 +19,17 @@ class Filters @Inject()(headersFilter: HeadersFilter) extends DefaultHttpFilters
 @Singleton
 class HeadersFilter @Inject()(implicit val mat: Materializer, executionContextUtils: ExecutionContext) extends Filter {
 
-  val dateFormat: DateTimeFormatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss z")
-
   def apply(nextFilter: RequestHeader => Future[Result])(requestHeader: RequestHeader): Future[Result] = {
     nextFilter(requestHeader).map { result =>
-      println("passing through filters ")
-      println("hello")
-      result.withHeaders(
-        PRAGMA -> "no-cache",
-        CACHE_CONTROL -> "no-cache, no-store, must-revalidate, max-age=0",
-        EXPIRES -> serverTime
-      )
+      result.body match {
+        case HttpEntity.Strict(data, contentType) =>
+          val modifiedData = data.utf8String.replace("hello world", "HELLO WORLD")
+          val modifiedByteString = ByteString(modifiedData, "UTF-8")
+          result.copy(body = HttpEntity.Strict(modifiedByteString, contentType))
+        case other =>
+          result
+      }
     }
-  }
-
-  private def serverTime = {
-    dateFormat.format(LocalDateTime.now().atZone(ZoneId.systemDefault()))
   }
 
 }
